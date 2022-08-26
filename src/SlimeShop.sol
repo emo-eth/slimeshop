@@ -4,9 +4,12 @@ import {MerkleProofLib} from "solady/utils/MerkleProofLib.sol";
 import {BoundLayerableFirstComposedCutoff} from "bound-layerable/examples/BoundLayerableFirstComposedCutoff.sol";
 import {CommissionWithdrawable} from "utility-contracts/withdrawable/CommissionWithdrawable.sol";
 import {ConstructorArgs} from "./Structs.sol";
+import {ERC2981} from "openzeppelin-contracts/contracts/token/common/ERC2981.sol";
+import {ERC721A} from "bound-layerable/token/ERC721A.sol";
 
 contract SlimeShop is
     BoundLayerableFirstComposedCutoff,
+    ERC2981,
     CommissionWithdrawable
 {
     uint256 immutable MINT_PRICE = 0.2 ether;
@@ -35,6 +38,10 @@ contract SlimeShop is
     {
         merkleRoot = args.merkleRoot;
         publicSaleStartTime = args.startTime;
+        _setDefaultRoyalty(
+            args.royaltyInfo.receiver,
+            args.royaltyInfo.royaltyFraction
+        );
     }
 
     function mint(uint256 numSets) public payable {
@@ -111,5 +118,24 @@ contract SlimeShop is
                 layerType := 5
             }
         }
+    }
+
+    function setDefaultRoyalty(address receiver, uint96 royaltyFraction)
+        public
+        onlyOwner
+    {
+        _setDefaultRoyalty(receiver, royaltyFraction);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC721A, ERC2981)
+        returns (bool)
+    {
+        return
+            interfaceId == type(ERC2981).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 }

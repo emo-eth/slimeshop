@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 import "../src/SlimeShop.sol";
 import {Merkle} from "murky/Merkle.sol";
-import {ConstructorArgs} from "../src/Structs.sol";
+import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
 
 contract SlimeShoptTest is Test {
     SlimeShop public test;
@@ -42,6 +42,7 @@ contract SlimeShoptTest is Test {
         constructorArgs.startTime = 0;
         constructorArgs.feeRecipient = address(3);
         constructorArgs.feeBps = 10;
+        constructorArgs.royaltyInfo = RoyaltyInfo(address(1), 1);
 
         test = new SlimeShop(constructorArgs);
     }
@@ -168,5 +169,19 @@ contract SlimeShoptTest is Test {
         uint256 mod = number % 7;
         uint256 expected = mod > 5 ? 5 : mod;
         assertEq(test.getLayerType(number), expected);
+    }
+
+    function testSetDefaultRoyaltyInfo() public {
+        test.setDefaultRoyalty(address(5), 100);
+        (address receiver, uint256 amount) = test.royaltyInfo(0, 10000);
+        assertEq(receiver, address(5));
+        assertEq(amount, 100);
+    }
+
+    function testSetDefaultRoyaltyInfo_onlyOwner(address addr) public {
+        vm.assume(addr != address(this));
+        vm.startPrank(addr);
+        vm.expectRevert(abi.encodeWithSignature("OnlyOwner()"));
+        test.setDefaultRoyalty(address(5), 100);
     }
 }

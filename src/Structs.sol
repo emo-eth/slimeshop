@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+struct RoyaltyInfo {
+    address receiver;
+    uint96 royaltyFraction;
+}
+
 struct ConstructorArgs {
     string name;
     string symbol;
@@ -15,4 +20,5 @@ struct ConstructorArgs {
     bytes32 merkleRoot;
     address feeRecipient;
     uint16 feeBps;
+    RoyaltyInfo royaltyInfo;
 }
