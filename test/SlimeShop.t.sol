@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 import "../src/SlimeShop.sol";
 import {Merkle} from "murky/Merkle.sol";
 import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
+import {IERC2981} from "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
 
 contract SlimeShoptTest is Test {
     SlimeShop public test;
@@ -183,5 +184,9 @@ contract SlimeShoptTest is Test {
         vm.startPrank(addr);
         vm.expectRevert(abi.encodeWithSignature("OnlyOwner()"));
         test.setDefaultRoyalty(address(5), 100);
+    }
+
+    function testSupportsInterface() public {
+        assertTrue(test.supportsInterface(type(IERC2981).interfaceId));
     }
 }
