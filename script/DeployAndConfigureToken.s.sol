@@ -10,8 +10,14 @@ import {Merkle} from "murky/Merkle.sol";
 contract DeployAndConfigureToken is Script {
     uint8[] layerTypes;
     uint256[2][] typeDistributions;
-
     ConstructorArgs constructorArgs;
+
+    struct AllowListLeaf {
+        address addr;
+        uint256 mintPrice;
+        uint256 maxSetsForWallet;
+        uint256 startTime;
+    }
 
     function setUp() public virtual {
         Solenv.config();
@@ -46,7 +52,7 @@ contract DeployAndConfigureToken is Script {
         constructorArgs.metadataContractAddress = metadataContractAddress;
         constructorArgs.firstComposedCutoff = firstComposedCutoff;
         constructorArgs.exclusiveLayerId = 255;
-        constructorArgs.merkleRoot = merkleRoot;
+        constructorArgs.merkleRoot = getMerkleRoot();
         constructorArgs.startTime = startTime;
         constructorArgs.feeRecipient = commissionFeeRecipient;
         constructorArgs.feeBps = 250;
@@ -58,14 +64,42 @@ contract DeployAndConfigureToken is Script {
         constructorArgs.maxSetsPerWallet = type(uint256).max;
     }
 
-    struct AllowListLeaf {
-        address addr;
-        uint256 maxSets;
-        uint256 maxSetsPerTx;
-        uint256 maxSetsPerDay;
-    }
+    function getMerkleRoot() internal returns (bytes32) {
+        AllowListLeaf[3] memory leaves = [
+            AllowListLeaf(
+                0x92B381515bd4851Faf3d33A161f7967FD87B1227,
+                0.01 ether,
+                5,
+                0
+            ),
+            AllowListLeaf(
+                0x333601a803CAc32B7D17A38d32c9728A93b422f4,
+                0.02 ether,
+                6,
+                0
+            ),
+            AllowListLeaf(
+                0x700fe545742485732575A7245f558978aDcc1Ec4,
+                0.03 ether,
+                7,
+                0
+            )
+        ];
+        bytes32[] memory leafHashes = new bytes32[](leaves.length);
+        for (uint256 i = 0; i < leaves.length; i++) {
+            leafHashes[i] = keccak256(
+                abi.encode(
+                    leaves[i].addr,
+                    leaves[i].mintPrice,
+                    leaves[i].maxSetsForWallet,
+                    leaves[i].startTime
+                )
+            );
+        }
 
-    function getMerkleRoot() internal {}
+        Merkle m = new Merkle();
+        return m.getRoot(leafHashes);
+    }
 
     function configureDistributions() internal {
         // portraits
