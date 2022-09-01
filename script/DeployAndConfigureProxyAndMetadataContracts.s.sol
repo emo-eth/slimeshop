@@ -3,13 +3,14 @@ pragma solidity ^0.8.4;
 
 import {Script} from "forge-std/Script.sol";
 import {TestnetToken} from "bound-layerable/implementations/TestnetToken.sol";
-import {ImageLayerable} from "bound-layerable/metadata/ImageLayerable.sol";
 import {Attribute} from "bound-layerable/interface/Structs.sol";
 import {DisplayType} from "bound-layerable/interface/Enums.sol";
 import {TransparentUpgradeableProxy} from "openzeppelin-contracts/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {Solenv} from "solenv/Solenv.sol";
+import {ConfigureMetadataContract} from "./ConfigureMetadataContract.s.sol";
+import {SlimeShopImageLayerable} from "../src/SlimeShopImageLayerable.sol";
 
-contract Deploy is Script {
+contract DeployAndConfigureMetadataProxy is Script {
     struct AttributeTuple {
         uint256 traitId;
         string name;
@@ -41,45 +42,35 @@ contract Deploy is Script {
     function run() public {
         address deployer = vm.envAddress("DEPLOYER");
         address admin = vm.envAddress("ADMIN");
-        address tokenAddress = vm.envAddress("TOKEN");
-        string memory defaultURI = vm.envString("DEFAULT_URI");
-        string memory baseLayerURI = vm.envString("BASE_LAYER_URI");
 
         // use a separate admin account to deploy the proxy
         vm.startBroadcast(admin);
         // deploy this to have a copy of implementation logic
-        ImageLayerable logic = new ImageLayerable(
+        SlimeShopImageLayerable logic = new SlimeShopImageLayerable(
             deployer,
-            defaultURI,
-            1000,
-            1250,
+            "",
+            0,
+            0,
             "",
             ""
         );
-
         // deploy proxy using the logic contract, setting "deployer" addr as owner
         TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
             address(logic),
             admin,
             abi.encodeWithSignature(
-                "initialize(address,string)",
+                "initialize(address,string,uint256,uint256,string,string)",
                 deployer,
-                "default"
+                "default",
+                1000,
+                1250,
+                "https://slimeshop.slimesunday.com",
+                "hello world"
             )
         );
         vm.stopBroadcast();
 
-        vm.startBroadcast(deployer);
-        // configure layerable contract metadata
-        ImageLayerable layerable = ImageLayerable(address(proxy));
-        layerable.setBaseLayerURI(baseLayerURI);
-
-        // uint256[] memory layerIds = []
-        // Attribute[] memory attributes = []
-        // layerable.setAttributes(layerIds, attributes);
-
-        // set metadata contract on token
-        // TestnetToken token = TestnetToken(tokenAddress);
-        // token.setMetadataContract(layerable);
+        ConfigureMetadataContract configure = new ConfigureMetadataContract();
+        configure.run(address(proxy));
     }
 }

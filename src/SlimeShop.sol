@@ -12,7 +12,7 @@ contract SlimeShop is
     ERC2981,
     CommissionWithdrawable
 {
-    uint256 immutable MINT_PRICE = 0.2 ether;
+    uint256 publicMintPrice = 0.15 ether;
     uint256 immutable MAX_SETS_PER_WALLET = 5;
     bytes32 public merkleRoot;
     uint256 public publicSaleStartTime;
@@ -49,8 +49,8 @@ contract SlimeShop is
         if (block.timestamp < _publicSaleStartTime) {
             revert MintNotActive(_publicSaleStartTime);
         }
-        uint256 price = MINT_PRICE * numSets;
-        if (msg.value < price) {
+        uint256 price = publicMintPrice * numSets;
+        if (msg.value != price) {
             revert IncorrectPayment(msg.value, price);
         }
         uint256 numSetsMinted = _numberMinted(msg.sender) / NUM_TOKENS_PER_SET;
