@@ -12,43 +12,43 @@ import {Solenv} from "solenv/Solenv.sol";
 import {TestnetToken} from "bound-layerable/implementations/TestnetToken.sol";
 
 contract Deploy is Script {
-  using Strings for uint256;
+    using Strings for uint256;
 
-  struct AttributeTuple {
-    uint256 traitId;
-    string name;
-  }
+    struct AttributeTuple {
+        uint256 traitId;
+        string name;
+    }
 
-  function setUp() public virtual {
-    Solenv.config();
-  }
+    function setUp() public virtual {
+        Solenv.config();
+    }
 
-  function run() public {
-    address deployer = vm.envAddress("DEPLOYER");
-    address admin = vm.envAddress("ADMIN");
-    // address proxyAddress = vm.envAddress("METADATA_PROXY");
-    address tokenAddress = vm.envAddress("TOKEN");
+    function run() public {
+        address deployer = vm.envAddress("DEPLOYER");
+        address admin = vm.envAddress("ADMIN");
+        // address proxyAddress = vm.envAddress("METADATA_PROXY");
+        address tokenAddress = vm.envAddress("TOKEN");
 
-    address proxyAddress = address(
-      TestnetToken(tokenAddress).metadataContract()
-    );
+        address proxyAddress = address(
+            TestnetToken(tokenAddress).metadataContract()
+        );
 
-    vm.startBroadcast(admin);
+        vm.startBroadcast(admin);
 
-    // deploy new logic contracts
-    ImageLayerable logic = new ImageLayerable(deployer, "", 0, 0);
-    TransparentUpgradeableProxy proxy = TransparentUpgradeableProxy(
-      payable(proxyAddress)
-    );
+        // deploy new logic contracts
+        ImageLayerable logic = new ImageLayerable(deployer, "", 0, 0, "", "");
+        TransparentUpgradeableProxy proxy = TransparentUpgradeableProxy(
+            payable(proxyAddress)
+        );
 
-    // upgrade proxy to use the new logic contract
-    proxy.upgradeTo(address(logic));
-    // vm.stopBroadcast();
+        // upgrade proxy to use the new logic contract
+        proxy.upgradeTo(address(logic));
+        // vm.stopBroadcast();
 
-    vm.stopBroadcast();
-    vm.startBroadcast(deployer);
-    ImageLayerable impl = ImageLayerable(proxyAddress);
-    impl.setWidth(1000);
-    impl.setHeight(1250);
-  }
+        vm.stopBroadcast();
+        vm.startBroadcast(deployer);
+        ImageLayerable impl = ImageLayerable(proxyAddress);
+        impl.setWidth(1000);
+        impl.setHeight(1250);
+    }
 }

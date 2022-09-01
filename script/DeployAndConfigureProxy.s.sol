@@ -10,65 +10,76 @@ import {TransparentUpgradeableProxy} from "openzeppelin-contracts/contracts/prox
 import {Solenv} from "solenv/Solenv.sol";
 
 contract Deploy is Script {
-  struct AttributeTuple {
-    uint256 traitId;
-    string name;
-  }
-
-  function setUp() public virtual {
-    Solenv.config();
-  }
-
-  function getLayerTypeStr(uint256 layerId)
-    public
-    pure
-    returns (string memory result)
-  {
-    uint256 layerType = (layerId - 1) / 32;
-    if (layerType == 0) {
-      result = "Portrait";
-    } else if (layerType == 1) {
-      result = "Background";
-    } else if (layerType == 2) {
-      result = "Texture";
-    } else if (layerType == 5 || layerType == 6) {
-      result = "Border";
-    } else {
-      result = "Object";
+    struct AttributeTuple {
+        uint256 traitId;
+        string name;
     }
-  }
 
-  function run() public {
-    address deployer = vm.envAddress("DEPLOYER");
-    address admin = vm.envAddress("ADMIN");
-    address tokenAddress = vm.envAddress("TOKEN");
-    string memory defaultURI = vm.envString("DEFAULT_URI");
-    string memory baseLayerURI = vm.envString("BASE_LAYER_URI");
+    function setUp() public virtual {
+        Solenv.config();
+    }
 
-    // use a separate admin account to deploy the proxy
-    vm.startBroadcast(admin);
-    // deploy this to have a copy of implementation logic
-    ImageLayerable logic = new ImageLayerable(deployer, defaultURI, 1000, 1250);
+    function getLayerTypeStr(uint256 layerId)
+        public
+        pure
+        returns (string memory result)
+    {
+        uint256 layerType = (layerId - 1) / 32;
+        if (layerType == 0) {
+            result = "Portrait";
+        } else if (layerType == 1) {
+            result = "Background";
+        } else if (layerType == 2) {
+            result = "Texture";
+        } else if (layerType == 5 || layerType == 6) {
+            result = "Border";
+        } else {
+            result = "Object";
+        }
+    }
 
-    // deploy proxy using the logic contract, setting "deployer" addr as owner
-    TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
-      address(logic),
-      admin,
-      abi.encodeWithSignature("initialize(address,string)", deployer, "default")
-    );
-    vm.stopBroadcast();
+    function run() public {
+        address deployer = vm.envAddress("DEPLOYER");
+        address admin = vm.envAddress("ADMIN");
+        address tokenAddress = vm.envAddress("TOKEN");
+        string memory defaultURI = vm.envString("DEFAULT_URI");
+        string memory baseLayerURI = vm.envString("BASE_LAYER_URI");
 
-    vm.startBroadcast(deployer);
-    // configure layerable contract metadata
-    ImageLayerable layerable = ImageLayerable(address(proxy));
-    layerable.setBaseLayerURI(baseLayerURI);
+        // use a separate admin account to deploy the proxy
+        vm.startBroadcast(admin);
+        // deploy this to have a copy of implementation logic
+        ImageLayerable logic = new ImageLayerable(
+            deployer,
+            defaultURI,
+            1000,
+            1250,
+            "",
+            ""
+        );
 
-    // uint256[] memory layerIds = []
-    // Attribute[] memory attributes = []
-    // layerable.setAttributes(layerIds, attributes);
+        // deploy proxy using the logic contract, setting "deployer" addr as owner
+        TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
+            address(logic),
+            admin,
+            abi.encodeWithSignature(
+                "initialize(address,string)",
+                deployer,
+                "default"
+            )
+        );
+        vm.stopBroadcast();
 
-    // set metadata contract on token
-    // TestnetToken token = TestnetToken(tokenAddress);
-    // token.setMetadataContract(layerable);
-  }
+        vm.startBroadcast(deployer);
+        // configure layerable contract metadata
+        ImageLayerable layerable = ImageLayerable(address(proxy));
+        layerable.setBaseLayerURI(baseLayerURI);
+
+        // uint256[] memory layerIds = []
+        // Attribute[] memory attributes = []
+        // layerable.setAttributes(layerIds, attributes);
+
+        // set metadata contract on token
+        // TestnetToken token = TestnetToken(tokenAddress);
+        // token.setMetadataContract(layerable);
+    }
 }
