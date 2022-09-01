@@ -14,7 +14,11 @@ contract SlimeShoptTest is Test {
 
     bytes32[] proof;
 
-    event Transfer(address indexed from, address indexed to, uint256 indexed id);
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 indexed id
+    );
 
     function setUp() public {
         bytes32[] memory leaves = new bytes32[](101);
@@ -40,6 +44,8 @@ contract SlimeShoptTest is Test {
         constructorArgs.feeRecipient = address(3);
         constructorArgs.feeBps = 10;
         constructorArgs.royaltyInfo = RoyaltyInfo(address(1), 1);
+        constructorArgs.publicMintPrice = 0.2 ether;
+        constructorArgs.maxSetsPerWallet = 5;
 
         test = new SlimeShop(constructorArgs);
     }
@@ -62,18 +68,31 @@ contract SlimeShoptTest is Test {
 
     function testMint_notActive() public {
         test.setPublicSaleStartTime(block.timestamp + 1);
-        vm.expectRevert(abi.encodeWithSelector(SlimeShop.MintNotActive.selector, block.timestamp + 1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlimeShop.MintNotActive.selector,
+                block.timestamp + 1
+            )
+        );
         test.mint{value: 0.2 ether}(1);
     }
 
     function testMint_incorrectPayment() public {
-        vm.expectRevert(abi.encodeWithSelector(SlimeShop.IncorrectPayment.selector, 0.19 ether, 0.2 ether));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlimeShop.IncorrectPayment.selector,
+                0.19 ether,
+                0.2 ether
+            )
+        );
         test.mint{value: 0.19 ether}(1);
     }
 
     function testMint_maxMintsExceeded() public {
         test.mint{value: 0.2 ether}(1);
-        vm.expectRevert(abi.encodeWithSelector(SlimeShop.MaxMintsExceeded.selector, 4));
+        vm.expectRevert(
+            abi.encodeWithSelector(SlimeShop.MaxMintsExceeded.selector, 4)
+        );
         test.mint{value: 1 ether}(5);
     }
 
@@ -86,23 +105,38 @@ contract SlimeShoptTest is Test {
 
     function testMintAllowList_notActive() public {
         vm.warp(0);
-        vm.expectRevert(abi.encodeWithSelector(SlimeShop.MintNotActive.selector, block.timestamp + 1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlimeShop.MintNotActive.selector,
+                block.timestamp + 1
+            )
+        );
         test.mintAllowList{value: 0.2 ether}(1, 0.2 ether, 5, 1, proof);
     }
 
     function testMintAllowList_incorrectPayment() public {
-        vm.expectRevert(abi.encodeWithSelector(SlimeShop.IncorrectPayment.selector, 0.19 ether, 0.2 ether));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlimeShop.IncorrectPayment.selector,
+                0.19 ether,
+                0.2 ether
+            )
+        );
         test.mintAllowList{value: 0.19 ether}(1, 0.2 ether, 5, 1, proof);
     }
 
     function testMintAllowList_maxMintsExceeded() public {
         test.mintAllowList{value: 0.2 ether}(1, 0.2 ether, 5, 1, proof);
-        vm.expectRevert(abi.encodeWithSelector(SlimeShop.MaxMintsExceeded.selector, 4));
+        vm.expectRevert(
+            abi.encodeWithSelector(SlimeShop.MaxMintsExceeded.selector, 4)
+        );
         test.mintAllowList{value: 1 ether}(5, 0.2 ether, 5, 1, proof);
     }
 
     function testMintAllowList_invalidProof() public {
-        vm.expectRevert(abi.encodeWithSelector(SlimeShop.InvalidProof.selector));
+        vm.expectRevert(
+            abi.encodeWithSelector(SlimeShop.InvalidProof.selector)
+        );
         test.mintAllowList{value: 0.2 ether}(1, 0.2 ether, 5, 0, proof);
     }
 
@@ -156,5 +190,16 @@ contract SlimeShoptTest is Test {
 
     function testSupportsInterface() public {
         assertTrue(test.supportsInterface(type(IERC2981).interfaceId));
+    }
+
+    function testSetPublicMintPrice() public {
+        test.setPublicMintPrice(0.1 ether);
+        assertEq(test.publicMintPrice(), 0.1 ether);
+    }
+
+    function testSetPublicMintPric_onlyOwner() public {
+        vm.startPrank(address(5));
+        vm.expectRevert(abi.encodeWithSignature("OnlyOwner()"));
+        test.setPublicMintPrice(0.1 ether);
     }
 }

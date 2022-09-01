@@ -5,6 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {Solenv} from "solenv/Solenv.sol";
 import {SlimeShop} from "../src/SlimeShop.sol";
 import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
+import {Merkle} from "murky/Merkle.sol";
 
 contract DeployAndConfigureToken is Script {
     uint8[] layerTypes;
@@ -17,7 +18,11 @@ contract DeployAndConfigureToken is Script {
         configureDistributions();
 
         address vrfCoordinatorAddress;
-        if (block.chainid == 1) {} else if (block.chainid == 4) {}
+        if (block.chainid == 1) {
+            vrfCoordinatorAddress = 0x271682DEB8C4E0901D1a1550aD2e64D568E69909;
+        } else if (block.chainid == 4) {
+            vrfCoordinatorAddress = 0x6168499c0cFfCaCD319c818142124B7A15E857ab;
+        }
         uint64 subscriptionId = uint64(vm.envUint("SUBSCRIPTION_ID"));
         address metadataContractAddress = vm.envAddress(
             "METADATA_CONTRACT_ADDRESS"
@@ -49,7 +54,18 @@ contract DeployAndConfigureToken is Script {
             royaltyRecipient,
             royaltyFeeBps
         );
+        constructorArgs.publicMintPrice = 0 ether;
+        constructorArgs.maxSetsPerWallet = type(uint256).max;
     }
+
+    struct AllowListLeaf {
+        address addr;
+        uint256 maxSets;
+        uint256 maxSetsPerTx;
+        uint256 maxSetsPerDay;
+    }
+
+    function getMerkleRoot() internal {}
 
     function configureDistributions() internal {
         // portraits
@@ -105,15 +121,9 @@ contract DeployAndConfigureToken is Script {
     function run() public {
         setUp();
         address deployer = vm.envAddress("DEPLOYER");
-        // address admin = vm.envAddress("ADMIN");
-        // address tokenAddress = vm.envAddress("TOKEN");
-        // string memory defaultURI = vm.envString("DEFAULT_URI");
-        // string memory baseLayerURI = vm.envString("BASE_LAYER_URI");
 
-        // use a separate admin account to deploy the proxy
         vm.startBroadcast(deployer);
         SlimeShop slimeShop = new SlimeShop(constructorArgs);
         slimeShop.setLayerTypeDistributions(layerTypes, typeDistributions);
-        // deploy this to have a copy of implementation logic
     }
 }

@@ -21,4 +21,6 @@ struct ConstructorArgs {
     address feeRecipient;
     uint16 feeBps;
     RoyaltyInfo royaltyInfo;
+    uint256 publicMintPrice;
+    uint256 maxSetsPerWallet;
 }

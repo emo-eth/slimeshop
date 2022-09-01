@@ -12,8 +12,8 @@ contract SlimeShop is
     ERC2981,
     CommissionWithdrawable
 {
-    uint256 publicMintPrice = 0.15 ether;
-    uint256 immutable MAX_SETS_PER_WALLET = 5;
+    uint256 public publicMintPrice = 0.15 ether;
+    uint256 immutable MAX_SETS_PER_WALLET;
     bytes32 public merkleRoot;
     uint256 public publicSaleStartTime;
 
@@ -38,6 +38,8 @@ contract SlimeShop is
     {
         merkleRoot = args.merkleRoot;
         publicSaleStartTime = args.startTime;
+        publicMintPrice = args.publicMintPrice;
+        MAX_SETS_PER_WALLET = args.maxSetsPerWallet;
         _setDefaultRoyalty(
             args.royaltyInfo.receiver,
             args.royaltyInfo.royaltyFraction
@@ -97,6 +99,10 @@ contract SlimeShop is
 
     function setPublicSaleStartTime(uint256 startTime) public onlyOwner {
         publicSaleStartTime = startTime;
+    }
+
+    function setPublicMintPrice(uint256 price) public onlyOwner {
+        publicMintPrice = price;
     }
 
     /**
