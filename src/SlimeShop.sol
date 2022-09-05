@@ -78,7 +78,7 @@ contract SlimeShop is
     function mintAllowList(
         uint256 numSets,
         uint256 mintPrice,
-        uint256 maxForWallet,
+        uint256 maxMintedSetsForWallet,
         uint256 startTime,
         bytes32[] calldata proof
     ) public payable {
@@ -89,14 +89,19 @@ contract SlimeShop is
             revert IncorrectPayment(msg.value, mintPrice);
         }
         uint256 numberMinted = _numberMinted(msg.sender) / NUM_TOKENS_PER_SET;
-        if (maxForWallet < numberMinted + numSets) {
-            revert MaxMintsExceeded(maxForWallet - numberMinted);
+        if (maxMintedSetsForWallet < numberMinted + numSets) {
+            revert MaxMintsExceeded(maxMintedSetsForWallet - numberMinted);
         }
         bool isValid = MerkleProofLib.verify(
             proof,
             merkleRoot,
             keccak256(
-                abi.encode(msg.sender, mintPrice, maxForWallet, startTime)
+                abi.encodePacked(
+                    msg.sender,
+                    mintPrice,
+                    maxMintedSetsForWallet,
+                    startTime
+                )
             )
         );
         if (!isValid) {
@@ -147,6 +152,15 @@ contract SlimeShop is
 
     function getPublicMaxSetsPerWallet() public view virtual returns (uint64) {
         return publicMintParameters.maxMintedSetsPerWallet;
+    }
+
+    function getNumberMintedForAddress(address addr)
+        public
+        view
+        virtual
+        returns (uint256)
+    {
+        return _numberMinted(addr);
     }
 
     function setMerkleRoot(bytes32 _merkleRoot) public onlyOwner {

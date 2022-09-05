@@ -7,6 +7,7 @@ out/
 /broadcast/*
 /broadcast/*/31337/
 remappings.txt
-html/
+html
 allowlist
-ts
+node_modules
+dist
