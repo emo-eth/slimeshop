@@ -12,10 +12,14 @@ contract SlimeShop is
     ERC2981,
     CommissionWithdrawable
 {
-    uint256 public publicMintPrice = 0.15 ether;
-    uint256 immutable MAX_SETS_PER_WALLET;
+    struct PublicMintParameters {
+        uint64 publicMintPrice;
+        uint64 publicSaleStartTime;
+        uint64 maxMintedSetsPerWallet;
+    }
+
+    PublicMintParameters publicMintParameters;
     bytes32 public merkleRoot;
-    uint256 public publicSaleStartTime;
 
     error IncorrectPayment(uint256 got, uint256 want);
     error InvalidProof();
@@ -36,10 +40,16 @@ contract SlimeShop is
         )
         CommissionWithdrawable(args.feeRecipient, args.feeBps)
     {
+        publicMintParameters = PublicMintParameters({
+            publicMintPrice: args.publicMintPrice,
+            publicSaleStartTime: args.startTime,
+            maxMintedSetsPerWallet: args.maxSetsPerWallet
+        });
+
         merkleRoot = args.merkleRoot;
-        publicSaleStartTime = args.startTime;
-        publicMintPrice = args.publicMintPrice;
-        MAX_SETS_PER_WALLET = args.maxSetsPerWallet;
+        // publicSaleStartTime = args.startTime;
+        // publicMintPrice = args.publicMintPrice;
+        // MAX_SETS_PER_WALLET = args.maxSetsPerWallet;
         _setDefaultRoyalty(
             args.royaltyInfo.receiver,
             args.royaltyInfo.royaltyFraction
@@ -47,17 +57,20 @@ contract SlimeShop is
     }
 
     function mint(uint256 numSets) public payable {
-        uint256 _publicSaleStartTime = publicSaleStartTime;
+        PublicMintParameters memory params = publicMintParameters;
+        uint256 _publicSaleStartTime = params.publicSaleStartTime;
         if (block.timestamp < _publicSaleStartTime) {
             revert MintNotActive(_publicSaleStartTime);
         }
-        uint256 price = publicMintPrice * numSets;
+        uint256 price = params.publicMintPrice * numSets;
         if (msg.value != price) {
             revert IncorrectPayment(msg.value, price);
         }
         uint256 numSetsMinted = _numberMinted(msg.sender) / NUM_TOKENS_PER_SET;
-        if (MAX_SETS_PER_WALLET < numSetsMinted + numSets) {
-            revert MaxMintsExceeded(MAX_SETS_PER_WALLET - numSetsMinted);
+        if (params.maxMintedSetsPerWallet < numSetsMinted + numSets) {
+            revert MaxMintsExceeded(
+                params.maxMintedSetsPerWallet - numSetsMinted
+            );
         }
         _mint(msg.sender, numSets * NUM_TOKENS_PER_SET);
     }
@@ -93,18 +106,6 @@ contract SlimeShop is
         _mint(msg.sender, numSets * NUM_TOKENS_PER_SET);
     }
 
-    function setMerkleRoot(bytes32 _merkleRoot) public onlyOwner {
-        merkleRoot = _merkleRoot;
-    }
-
-    function setPublicSaleStartTime(uint256 startTime) public onlyOwner {
-        publicSaleStartTime = startTime;
-    }
-
-    function setPublicMintPrice(uint256 price) public onlyOwner {
-        publicMintPrice = price;
-    }
-
     /**
      * @notice Determine layer type by its token ID
      */
@@ -124,6 +125,40 @@ contract SlimeShop is
                 layerType := 5
             }
         }
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override(ERC721A)
+        returns (string memory)
+    {
+        return _tokenURI(tokenId);
+    }
+
+    function getPublicSaleStartTime() public view virtual returns (uint64) {
+        return publicMintParameters.publicSaleStartTime;
+    }
+
+    function getPublicMintPrice() public view virtual returns (uint64) {
+        return publicMintParameters.publicMintPrice;
+    }
+
+    function getPublicMaxSetsPerWallet() public view virtual returns (uint64) {
+        return publicMintParameters.maxMintedSetsPerWallet;
+    }
+
+    function setMerkleRoot(bytes32 _merkleRoot) public onlyOwner {
+        merkleRoot = _merkleRoot;
+    }
+
+    function setPublicSaleStartTime(uint64 startTime) public onlyOwner {
+        publicMintParameters.publicSaleStartTime = startTime;
+    }
+
+    function setPublicMintPrice(uint64 price) public onlyOwner {
+        publicMintParameters.publicMintPrice = price;
     }
 
     function setDefaultRoyalty(address receiver, uint96 royaltyFraction)

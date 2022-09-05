@@ -67,7 +67,7 @@ contract SlimeShoptTest is Test {
     }
 
     function testMint_notActive() public {
-        test.setPublicSaleStartTime(block.timestamp + 1);
+        test.setPublicSaleStartTime(uint64(block.timestamp + 1));
         vm.expectRevert(
             abi.encodeWithSelector(
                 SlimeShop.MintNotActive.selector,
@@ -148,7 +148,7 @@ contract SlimeShoptTest is Test {
 
     function testSetPublicSaleStartTime() public {
         test.setPublicSaleStartTime(10);
-        assertEq(test.publicSaleStartTime(), 10);
+        assertEq(test.getPublicSaleStartTime(), 10);
     }
 
     function testSetPublicSaleStartTime_onlyOwner() public {
@@ -194,7 +194,7 @@ contract SlimeShoptTest is Test {
 
     function testSetPublicMintPrice() public {
         test.setPublicMintPrice(0.1 ether);
-        assertEq(test.publicMintPrice(), 0.1 ether);
+        assertEq(test.getPublicMintPrice(), 0.1 ether);
     }
 
     function testSetPublicMintPric_onlyOwner() public {

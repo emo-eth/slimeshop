@@ -37,8 +37,8 @@ contract DeployAndConfigureToken is Script {
             "FIRST_COMPOSED_CUTOFF_TIMESTAMP"
         );
         bytes32 merkleRoot = vm.envBytes32("MERKLE_ROOT");
-        uint256 startTime = vm.envUint("START_TIME");
-        startTime = startTime == 0 ? type(uint256).max : startTime;
+        uint64 startTime = uint64(vm.envUint("START_TIME"));
+        startTime = startTime == 0 ? type(uint64).max : startTime;
         address commissionFeeRecipient = vm.envAddress("FEE_RECIPIENT");
         address royaltyRecipient = vm.envAddress("ROYALTY_RECIPIENT");
         uint96 royaltyFeeBps = uint96(vm.envUint("ROYALTY_FEE_BPS"));
@@ -61,7 +61,7 @@ contract DeployAndConfigureToken is Script {
             royaltyFeeBps
         );
         constructorArgs.publicMintPrice = 0 ether;
-        constructorArgs.maxSetsPerWallet = type(uint256).max;
+        constructorArgs.maxSetsPerWallet = type(uint64).max;
     }
 
     function getMerkleRoot() internal returns (bytes32) {
@@ -159,5 +159,7 @@ contract DeployAndConfigureToken is Script {
         vm.startBroadcast(deployer);
         SlimeShop slimeShop = new SlimeShop(constructorArgs);
         slimeShop.setLayerTypeDistributions(layerTypes, typeDistributions);
+
+        slimeShop.mint(2);
     }
 }

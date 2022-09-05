@@ -16,11 +16,11 @@ struct ConstructorArgs {
     address metadataContractAddress;
     uint256 firstComposedCutoff;
     uint8 exclusiveLayerId;
-    uint256 startTime;
+    uint64 startTime;
     bytes32 merkleRoot;
     address feeRecipient;
     uint16 feeBps;
     RoyaltyInfo royaltyInfo;
-    uint256 publicMintPrice;
-    uint256 maxSetsPerWallet;
+    uint64 publicMintPrice;
+    uint64 maxSetsPerWallet;
 }
