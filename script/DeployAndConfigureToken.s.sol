@@ -172,7 +172,6 @@ contract DeployAndConfigureToken is Script {
 
     function run() public {
         setUp();
-        // vm.warp(1662422225);
         address deployer = vm.envAddress("DEPLOYER");
 
         vm.startBroadcast(deployer);

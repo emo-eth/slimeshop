@@ -8,18 +8,7 @@ import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
 import {Merkle} from "murky/Merkle.sol";
 import {PackedByteUtility} from "bound-layerable/lib/PackedByteUtility.sol";
 
-contract Misc is Script {
-    uint8[] layerTypes;
-    uint256[2][] typeDistributions;
-    ConstructorArgs constructorArgs;
-
-    struct AllowListLeaf {
-        address addr;
-        uint256 mintPrice;
-        uint256 maxSetsForWallet;
-        uint256 startTime;
-    }
-
+contract MintOutCollectionAndReveal is Script {
     function setUp() public virtual {
         Solenv.config();
     }
@@ -27,12 +16,14 @@ contract Misc is Script {
     function run() public {
         setUp();
         address deployer = vm.envAddress("DEPLOYER");
-        address token = vm.envAddress("TOKEN");
+        address token = vm.envAddress("MINT_OUT_TOKEN");
         SlimeShop slimeShop = SlimeShop(token);
         vm.startBroadcast(deployer);
         slimeShop.setMaxMintedSetsPerWallet(type(uint64).max);
-        slimeShop.setMerkleRoot(vm.envBytes32("MERKLE_ROOT"));
-        slimeShop.setForceUnsafeReveal(true);
-        slimeShop.setMaxMintedSetsPerWallet(type(uint64).max);
+        for (uint256 i; i < 16; ++i) {
+            slimeShop.mint(347);
+        }
+        slimeShop.mint(3);
+        slimeShop.requestRandomWords();
     }
 }
