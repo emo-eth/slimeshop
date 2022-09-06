@@ -23,4 +23,5 @@ struct ConstructorArgs {
     RoyaltyInfo royaltyInfo;
     uint64 publicMintPrice;
     uint64 maxSetsPerWallet;
+    bytes32 keyHash;
 }

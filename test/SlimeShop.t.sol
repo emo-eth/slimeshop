@@ -219,107 +219,106 @@ contract SlimeShopTest is Test {
 
     function testGeneratedAllowList() public {
         test.setMerkleRoot(
-            0x96d2442fbaa5f27be7314d06132e36c424f6b7aff481166359f863b851f9c6d8
+            0x34f5d73d194b6fba70855b32365dfb06807a9113c81f7ca28e261fc05a00ea67
         );
         bytes32[13] memory _proof = [
             bytes32(
-                0x1b8088c2dcb81d2977ecf16ce269a594aa6e7d9a15af52d1896e799d15f02e29
+                0xfaba3211a659a50115f80392f5471f7dee9097650d02e808669638eb7b896ead
             ),
             bytes32(
-                0xa1b6f0c4928cb49da26f9502b78b1eb4a7d6bc3ebcc2dcde671ce72d12e5323e
+                0x7af6b72f2a9ec1038fa03c97bae33f9ec919273517448cc167c84b870e227000
             ),
             bytes32(
-                0xb14caa9fdfc1ce6619b3643171f0471af2da0df24d63a465bdf8ab684acc422e
+                0xb64b0ebd1826ea8f493faa4512f33fd60297027c320777d773974adb09c492d8
             ),
             bytes32(
-                0x2b13c1f4fb374f7412da611785a47ce9624f6747b617810c070a7cf36317cd0a
+                0xcc1cbe64595829503e6a0cb62a9cc3a530ffb6fef07f0e0449fcd59f2e15bb06
             ),
             bytes32(
-                0xa4835cff014139f547664816f8a839f49d5bf20e74ac6d0e1c7eb64cedfe5480
+                0x4abcbf51c57168e3d5de7dac66c024350016969dbcb99eaf60cc0761fb6cdeb8
             ),
             bytes32(
-                0x4227e38144ef611a30eaf71a8c192f2b09342bb6963d7ac0a7d44a734b2a3ac1
+                0x2369660fff3e4226450ea7ba4108e14e5546750b0d6c8b91c0ff3cf35acbf44f
             ),
             bytes32(
-                0x522e17ff193ac25d7bf4b9642033eea700c8509e9ea8109982b55c0bab179f89
+                0x6c669b36eb4e77b4f82bba75751fd7a6ae05c6abb2654badfe947b3c07e45200
             ),
             bytes32(
-                0x268f41439b9faa52bb34c0c57b47bf232dd5527319817edf5175467e5dc65776
+                0x46dbed7c71375dcde762832306f3bb8d645c265b12f4d4ec7fd69fe49d5d89db
             ),
             bytes32(
-                0x29b206dd0d6b50f709a031ead70a9c741b8229aa322ebd69e3102f24c7a0c369
+                0x2a17bdcc2545633b62d5a3a80ea337836cdac149c2e6c03f3cab57c38d7f6b44
             ),
             bytes32(
-                0x1ca0b8a24ef9728429ccc2dc9bb158012b8d9a679b8bb375acf262a77b78daf7
+                0x5be8de11e7523caeb1a1a2bd407f356fe37d752ed5a8a3319fb9cf3f9fbb6884
             ),
             bytes32(
-                0x17b8a6f26bb8027eb19563edf34abea8ca8b0897fe00d9cd6d6ba58247d9ffd0
+                0xc6ec3794b32748ffe28463de6ca6ff5191f6069c7283f75f1b2a9175beec6164
             ),
             bytes32(
-                0x7ef2875b59a072bbd30073a1a2d7c2f0e8e5079463137c2cb2f1640bd0b6034d
+                0xf1837fcc1bd629d46a05adbf3c93b5f12c873afe43fabf6a570debfbf28d5e4e
             ),
             bytes32(
-                0x1a26bdbc844c990481656e86e5f6b65bb430fb99cd48d0fe58be609ad5fc5df5
+                0x6df245d0af423e10c93cc091e76031c014ab71e8dda9f28aa046f7c38004b60e
             )
         ];
         bytes32[] memory newProof = new bytes32[](13);
         for (uint256 i = 0; i < 13; i++) {
             newProof[i] = _proof[i];
         }
-        vm.warp(1662652800);
+        vm.warp(1662421847);
 
-        startHoax(0x0E2bc0b90B2C9a6B3C91016FF80de944B4d4D96e, 100 ether);
+        startHoax(0x124AEfa2Fa991c62c3A137369fA8cd076dE27B80, 100 ether);
         test.mintAllowList{value: 95000000000000000}(
             1,
             95000000000000000,
             5,
-            1662652800,
+            1662421847,
             newProof
         );
 
         _proof = [
             bytes32(
-                0x18a552e32753bd2389843644bb1cf7fbf40261e6decf0f1020948cd040f70a68
+                0x1b3e2c153591a89bd1aaeea1ca5b64a7ebc9cf9f66d402eee0193673733d25d3
             ),
             bytes32(
-                0xa2efc27956632ae1d063bee79b2674ad2d3b0301406e4266bed75e0c8bad208c
+                0xdcc8be27e506e2b4a789d61864b07e8a320f057a6be5ae4eb72bb3e7fed3746a
             ),
             bytes32(
-                0x2c3f50fd2742cf697fae8a0c57c0fe066d0ecf3c25f7253a68ee91d10d52b9d8
+                0x2dabf96b488d5d59075fa75b065a8f41c00b1d8a0dcde3b0fb3fafdef283b6b3
             ),
             bytes32(
-                0x14c22e6d55f56f5a230e2089a913b4c564700040050a21779750445466796698
+                0xd737e80138c8535c4c2f5c342612753d5e135f6eebeaf4db16ec8fa8b1e0cf39
             ),
             bytes32(
-                0xde1bbb9af7f3985ec0473dab63bc3e4a5367c0d0641f7f1c5f6a42707aee35ba
+                0x1aa9bdaf2b56ecff7881df98f3e449dc43534434cd403cc9e1bfc557d3766f15
             ),
             bytes32(
-                0xb313244061c48991b13b3c128e49a7a7609f1ccc8cbc94b789631180d664f71b
+                0x1314882e983335e2550741b9b02c4141b939f82d34e88ae71e37cf59afe0c023
             ),
             bytes32(
-                0x4551c2273a51ab6a2abef6a93d50cbffbeea4851aed9d6fa27ecf28b6183f1a2
+                0x53f7e2438b1ae1f4d287afbbf9c498f81b0f96736fc1e3d9676ce57bcae3a9a6
             ),
             bytes32(
-                0x453208dd67be54872334012aca376afa591a71b3f1a0858cc503beb1915146ee
+                0x93f5c1b469d050c373747fb707ad62af8c7b68aee483d3b8437f9d05fec40eef
             ),
             bytes32(
-                0x29b206dd0d6b50f709a031ead70a9c741b8229aa322ebd69e3102f24c7a0c369
+                0xdd71a593bf8e34055ef570a6abb746976aa8609a869b97db985b9203dfef4f9c
             ),
             bytes32(
-                0x1ca0b8a24ef9728429ccc2dc9bb158012b8d9a679b8bb375acf262a77b78daf7
+                0xb63fbea70bb45c7de6628cc1c70e7e824031f8ca7cdd63c1fac9a552b3fc5a19
             ),
             bytes32(
-                0x17b8a6f26bb8027eb19563edf34abea8ca8b0897fe00d9cd6d6ba58247d9ffd0
+                0xdb6d70fd24ad44450565c696b26239ba73cd5d9de58cdc1ac0c9420ee171cdac
             ),
             bytes32(
-                0x7ef2875b59a072bbd30073a1a2d7c2f0e8e5079463137c2cb2f1640bd0b6034d
+                0x94c6d9a550d6e602354abcd7192fd8e013e26187fea1dfadb72a9c8419999856
             ),
             bytes32(
-                0x1a26bdbc844c990481656e86e5f6b65bb430fb99cd48d0fe58be609ad5fc5df5
+                0x5f30fd6ea8b4db5d0ff4df679e2040c581f410bea6885059d19774acb2b13ff0
             )
         ];
 
-        vm.warp(1662660000);
         newProof = new bytes32[](13);
         for (uint256 i = 0; i < 13; i++) {
             newProof[i] = _proof[i];
@@ -329,7 +328,7 @@ contract SlimeShopTest is Test {
             1,
             150000000000000000,
             10,
-            1662660000,
+            1662421847,
             newProof
         );
     }

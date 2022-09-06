@@ -29,14 +29,19 @@ contract Misc is Script {
         address deployer = vm.envAddress("DEPLOYER");
         address token = vm.envAddress("TOKEN");
         SlimeShop slimeShop = SlimeShop(token);
-        bytes32 keyHash = 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc;
         vm.startBroadcast(deployer);
-        // slimeShop.setForceUnsafeReveal(true);
-        // slimeShop.requestRandomWords(keyHash);
-        slimeShop.mint(100);
-        slimeShop.mint(100);
-        slimeShop.mint(100);
-        slimeShop.mint(100);
+        // slimeShop.setMaxMintedSetsPerWallet(type(uint64).max);
+        // slimeShop.setMerkleRoot(vm.envBytes32("MERKLE_ROOT"));
+        slimeShop.setForceUnsafeReveal(true);
+        slimeShop.requestRandomWords();
+        slimeShop.mint(3);
+        // for (uint256 i; i < 16; ++i) {
+        //     slimeShop.mint(347);
+        // }
+        // slimeShop.mint(3);
+        // slimeShop.mint(100);
+        // slimeShop.mint(100);
+        // slimeShop.mint(100);
 
         // uint256[] memory tokenIds = new uint256[](6);
         // tokenIds[0] = 1;

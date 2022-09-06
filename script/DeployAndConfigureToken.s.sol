@@ -7,10 +7,17 @@ import {SlimeShop} from "../src/SlimeShop.sol";
 import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
 import {Merkle} from "murky/Merkle.sol";
 
+interface ConsumerAdder {
+    function addConsumer(uint64 id, address consumer) external;
+}
+
 contract DeployAndConfigureToken is Script {
     uint8[] layerTypes;
     uint256[2][] typeDistributions;
+    uint64 subscriptionId;
     ConstructorArgs constructorArgs;
+
+    ConsumerAdder subscription;
 
     struct AllowListLeaf {
         address addr;
@@ -24,12 +31,22 @@ contract DeployAndConfigureToken is Script {
         configureDistributions();
 
         address vrfCoordinatorAddress;
+        bytes32 keyHash;
         if (block.chainid == 1) {
             vrfCoordinatorAddress = 0x271682DEB8C4E0901D1a1550aD2e64D568E69909;
+            keyHash = bytes32(
+                0x8af398995b04c28e9951adb9721ef74c74f93e6a478f39e7e0777be13527e7ef
+            );
         } else if (block.chainid == 4) {
             vrfCoordinatorAddress = 0x6168499c0cFfCaCD319c818142124B7A15E857ab;
+            subscription = ConsumerAdder(
+                0x6168499c0cFfCaCD319c818142124B7A15E857ab
+            );
+            keyHash = bytes32(
+                0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc
+            );
         }
-        uint64 subscriptionId = uint64(vm.envUint("SUBSCRIPTION_ID"));
+        subscriptionId = uint64(vm.envUint("SUBSCRIPTION_ID"));
         address metadataContractAddress = vm.envAddress(
             "METADATA_CONTRACT_ADDRESS"
         );
@@ -52,7 +69,7 @@ contract DeployAndConfigureToken is Script {
         constructorArgs.metadataContractAddress = metadataContractAddress;
         constructorArgs.firstComposedCutoff = firstComposedCutoff;
         constructorArgs.exclusiveLayerId = 255;
-        constructorArgs.merkleRoot = getMerkleRoot();
+        constructorArgs.merkleRoot = merkleRoot;
         constructorArgs.startTime = startTime;
         constructorArgs.feeRecipient = commissionFeeRecipient;
         constructorArgs.feeBps = 250;
@@ -62,6 +79,7 @@ contract DeployAndConfigureToken is Script {
         );
         constructorArgs.publicMintPrice = 0 ether;
         constructorArgs.maxSetsPerWallet = type(uint64).max;
+        constructorArgs.keyHash = keyHash;
     }
 
     function getMerkleRoot() internal returns (bytes32) {
@@ -154,12 +172,12 @@ contract DeployAndConfigureToken is Script {
 
     function run() public {
         setUp();
+        // vm.warp(1662422225);
         address deployer = vm.envAddress("DEPLOYER");
 
         vm.startBroadcast(deployer);
         SlimeShop slimeShop = new SlimeShop(constructorArgs);
+        subscription.addConsumer(subscriptionId, address(slimeShop));
         slimeShop.setLayerTypeDistributions(layerTypes, typeDistributions);
-
-        slimeShop.mint(2);
     }
 }

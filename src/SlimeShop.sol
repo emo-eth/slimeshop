@@ -36,7 +36,9 @@ contract SlimeShop is
             args.subscriptionId,
             args.metadataContractAddress,
             args.firstComposedCutoff,
-            args.exclusiveLayerId
+            args.exclusiveLayerId,
+            16,
+            args.keyHash
         )
         CommissionWithdrawable(args.feeRecipient, args.feeBps)
     {
@@ -173,6 +175,13 @@ contract SlimeShop is
 
     function setPublicMintPrice(uint64 price) public onlyOwner {
         publicMintParameters.publicMintPrice = price;
+    }
+
+    function setMaxMintedSetsPerWallet(uint64 maxMintedSetsPerWallet)
+        public
+        onlyOwner
+    {
+        publicMintParameters.maxMintedSetsPerWallet = maxMintedSetsPerWallet;
     }
 
     function setDefaultRoyalty(address receiver, uint96 royaltyFraction)
