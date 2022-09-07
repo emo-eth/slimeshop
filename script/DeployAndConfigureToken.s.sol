@@ -53,6 +53,10 @@ contract DeployAndConfigureToken is Script {
         uint256 firstComposedCutoff = vm.envUint(
             "FIRST_COMPOSED_CUTOFF_TIMESTAMP"
         );
+        if (block.chainid == 1) {
+            // 2022-09-15 14:00:00 EDT
+            firstComposedCutoff = 1663275600;
+        }
         bytes32 merkleRoot = vm.envBytes32("MERKLE_ROOT");
         uint64 startTime = uint64(vm.envUint("START_TIME"));
         startTime = startTime == 0 ? type(uint64).max : startTime;

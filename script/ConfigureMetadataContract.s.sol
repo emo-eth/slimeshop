@@ -223,7 +223,7 @@ contract ConfigureMetadataContract is Script {
             AttributeTuple(84, "Half Banner"),
             AttributeTuple(78, "Mushroom Farm"),
             AttributeTuple(77, "Razor Blade"),
-            AttributeTuple(255, "Slimesunday 1 of 1")
+            AttributeTuple(255, "SLIMESUNDAY 1 of 1")
         ];
 
         for (uint256 i; i < attributeTuples.length; i++) {
