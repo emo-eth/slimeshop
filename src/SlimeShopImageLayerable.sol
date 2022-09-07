@@ -27,14 +27,13 @@ contract SlimeShopImageLayerable is ImageLayerable {
         )
     {}
 
-    function _getName(uint256 tokenId, uint256 layerId)
-        internal
-        view
-        override
-        returns (string memory)
-    {
+    function _getName(
+        uint256 tokenId,
+        uint256 layerId,
+        uint256 bindings
+    ) internal view override returns (string memory) {
         uint256 adjustedTokenId = tokenId + 1;
-        if (layerId == 0) {
+        if (layerId == 0 || bindings != 0) {
             return string.concat("SLIMESHOP - #", adjustedTokenId.toString());
         }
         Attribute memory layerAttribute = traitAttributes[layerId];

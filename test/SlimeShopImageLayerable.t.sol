@@ -26,12 +26,12 @@ contract SlimeShopImageLayerableTestImpl is SlimeShopImageLayerable {
         )
     {}
 
-    function getName(uint256 tokenId, uint256 layerId)
-        public
-        view
-        returns (string memory)
-    {
-        return _getName(tokenId, layerId);
+    function getName(
+        uint256 tokenId,
+        uint256 layerId,
+        uint256 bindings
+    ) public view returns (string memory) {
+        return _getName(tokenId, layerId, bindings);
     }
 }
 
@@ -51,14 +51,14 @@ contract SlimeShopImageLayerableTest is Test {
     }
 
     function testGetName() public {
-        assertEq(test.getName(1, 0), "SLIMESHOP - #2");
-        assertEq(test.getName(100, 0), "SLIMESHOP - #101");
+        assertEq(test.getName(1, 0, 0), "SLIMESHOP - #2");
+        assertEq(test.getName(100, 0, 0), "SLIMESHOP - #101");
     }
 
     function testGetName(uint256 tokenId) public {
         tokenId = bound(tokenId, 0, type(uint256).max - 1);
         assertEq(
-            test.getName(tokenId, 0),
+            test.getName(tokenId, 0, 0),
             string.concat("SLIMESHOP - #", (tokenId + 1).toString())
         );
     }
@@ -67,8 +67,17 @@ contract SlimeShopImageLayerableTest is Test {
         test.setAttribute(1, Attribute("Type", "Name", DisplayType.String));
         tokenId = bound(tokenId, 0, type(uint256).max - 1);
         assertEq(
-            test.getName(tokenId, 1),
+            test.getName(tokenId, 1, 0),
             string.concat("SLIMESHOP - Name - #", (tokenId + 1).toString())
+        );
+    }
+
+    function testGetName_Bindings(uint256 tokenId) public {
+        test.setAttribute(1, Attribute("Type", "Name", DisplayType.String));
+        tokenId = bound(tokenId, 0, type(uint256).max - 1);
+        assertEq(
+            test.getName(tokenId, 1, 2),
+            string.concat("SLIMESHOP - #", (tokenId + 1).toString())
         );
     }
 }

@@ -47,9 +47,7 @@ contract DeployAndConfigureToken is Script {
             );
         }
         subscriptionId = uint64(vm.envUint("SUBSCRIPTION_ID"));
-        address metadataContractAddress = vm.envAddress(
-            "METADATA_CONTRACT_ADDRESS"
-        );
+        address metadataContractAddress = vm.envAddress("METADATA_PROXY");
         uint256 firstComposedCutoff = vm.envUint(
             "FIRST_COMPOSED_CUTOFF_TIMESTAMP"
         );
