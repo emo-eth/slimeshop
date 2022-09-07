@@ -79,8 +79,8 @@ contract DeployAndConfigureToken is Script {
             royaltyRecipient,
             royaltyFeeBps
         );
-        constructorArgs.publicMintPrice = 0 ether;
-        constructorArgs.maxSetsPerWallet = type(uint64).max;
+        constructorArgs.publicMintPrice = .15 ether;
+        constructorArgs.maxSetsPerWallet = 5;
         constructorArgs.keyHash = keyHash;
     }
 
@@ -180,5 +180,7 @@ contract DeployAndConfigureToken is Script {
         SlimeShop slimeShop = new SlimeShop(constructorArgs);
         subscription.addConsumer(subscriptionId, address(slimeShop));
         slimeShop.setLayerTypeDistributions(layerTypes, typeDistributions);
+        slimeShop.mint{value: 0.15 ether}(1);
+        slimeShop.withdraw();
     }
 }

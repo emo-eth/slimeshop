@@ -61,7 +61,7 @@ contract SlimeShop is
         );
     }
 
-    function mint(uint256 numSets) public payable {
+    function mint(uint256 numSets) public payable canMint(numSets) {
         PublicMintParameters memory params = publicMintParameters;
         uint256 _publicSaleStartTime = params.publicSaleStartTime;
         if (block.timestamp < _publicSaleStartTime) {
@@ -86,7 +86,7 @@ contract SlimeShop is
         uint256 maxMintedSetsForWallet,
         uint256 startTime,
         bytes32[] calldata proof
-    ) public payable {
+    ) public payable canMint(numSets) {
         if (block.timestamp < startTime) {
             revert MintNotActive(startTime);
         }

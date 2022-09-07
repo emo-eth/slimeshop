@@ -2,11 +2,11 @@ import * as allowList from '../allowlist/test_allowList.json'
 import {MerkleTree} from 'merkletreejs';
 import {BigNumber, ethers} from 'ethers'
 import { keccak256 } from '@ethersproject/keccak256';
-import * as lite from '../allowlist/test_allowlist_lite.json';
+import * as lite from '../allowlist/allowlist_lite.json';
 
 const ALLOWLIST_MINT_PRICE = BigNumber.from('95000000000000000');
 const PUBLIC_MINT_PRICE =    BigNumber.from('150000000000000000')
-const RINKEBY_START_TIME = BigNumber.from(1662421847);
+// const RINKEBY_START_TIME = BigNumber.from(1662421847);
 const MAINNET_START_TIME = BigNumber.from(1662660000);
 
 const liteLeaves: string[] = lite;
@@ -16,13 +16,13 @@ for (let leaf of liteLeaves) {
         address: leaf.toLowerCase(),
         mintPrice: ALLOWLIST_MINT_PRICE,
         maxMintedSetsForWallet: BigNumber.from(5),
-        startTime: BigNumber.from(RINKEBY_START_TIME)
+        startTime: BigNumber.from(MAINNET_START_TIME)
     })
     leaves.push({
         address: leaf.toLowerCase(),
         mintPrice: PUBLIC_MINT_PRICE,
         maxMintedSetsForWallet: BigNumber.from(10),
-        startTime: BigNumber.from(RINKEBY_START_TIME)
+        startTime: BigNumber.from(MAINNET_START_TIME)
     })
 }
 

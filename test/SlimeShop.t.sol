@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 import "../src/SlimeShop.sol";
 import {Merkle} from "murky/Merkle.sol";
 import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
+import {MaxSupply} from "bound-layerable/interface/Errors.sol";
 import {IERC2981} from "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
 
 contract SlimeShopTest is Test {
@@ -102,12 +103,29 @@ contract SlimeShopTest is Test {
         test.mint{value: 0.19 ether}(1);
     }
 
+    function testMint_incorrectPaymentGreater() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlimeShop.IncorrectPayment.selector,
+                0.21 ether,
+                0.2 ether
+            )
+        );
+        test.mint{value: 0.21 ether}(1);
+    }
+
     function testMint_maxMintsExceeded() public {
         test.mint{value: 0.2 ether}(1);
         vm.expectRevert(
             abi.encodeWithSelector(SlimeShop.MaxMintsExceeded.selector, 4)
         );
         test.mint{value: 1 ether}(5);
+    }
+
+    function testMint_maxSets() public {
+        test.setMaxMintedSetsPerWallet(type(uint64).max);
+        vm.expectRevert(MaxSupply.selector);
+        test.mint{value: 0.2 ether * 5556}(5556);
     }
 
     function testMintAllowList() public {
@@ -137,6 +155,15 @@ contract SlimeShopTest is Test {
             )
         );
         test.mintAllowList{value: 0.19 ether}(1, 0.2 ether, 5, 1, proof);
+    }
+
+    function testMintAllowList_maxSupply() public {
+        constructorArgs.maxNumSets = 3;
+        test = new SlimeShop(constructorArgs);
+
+        test.mintAllowList{value: 0.2 ether}(1, 0.2 ether, 5, 1, proof);
+        vm.expectRevert(MaxSupply.selector);
+        test.mintAllowList{value: .8 ether}(4, 0.2 ether, 5, 1, proof);
     }
 
     function testMintAllowList_maxMintsExceeded() public {
