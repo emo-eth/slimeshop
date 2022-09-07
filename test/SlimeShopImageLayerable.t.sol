@@ -67,8 +67,11 @@ contract SlimeShopImageLayerableTest is Test {
         test.setAttribute(1, Attribute("Type", "Name", DisplayType.String));
         tokenId = bound(tokenId, 0, type(uint256).max - 1);
         assertEq(
-            test.getName(tokenId, 0),
-            string.concat("SLIMESHOP - Type - Name - #", (tokenId + 1).toString())
+            test.getName(tokenId, 1),
+            string.concat(
+                "SLIMESHOP - Type - Name - #",
+                (tokenId + 1).toString()
+            )
         );
     }
 }
