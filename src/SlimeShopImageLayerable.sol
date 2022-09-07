@@ -41,8 +41,6 @@ contract SlimeShopImageLayerable is ImageLayerable {
         return
             string.concat(
                 "SLIMESHOP - ",
-                layerAttribute.traitType,
-                " - ",
                 layerAttribute.value,
                 " - #",
                 adjustedTokenId.toString()

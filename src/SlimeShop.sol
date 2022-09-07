@@ -7,6 +7,12 @@ import {ConstructorArgs} from "./Structs.sol";
 import {ERC2981} from "openzeppelin-contracts/contracts/token/common/ERC2981.sol";
 import {ERC721A} from "bound-layerable/token/ERC721A.sol";
 
+// ░██████╗██╗░░░░░██╗███╗░░░███╗███████╗░██████╗██╗░░██╗░█████╗░██████╗░
+// ██╔════╝██║░░░░░██║████╗░████║██╔════╝██╔════╝██║░░██║██╔══██╗██╔══██╗
+// ╚█████╗░██║░░░░░██║██╔████╔██║█████╗░░╚█████╗░███████║██║░░██║██████╔╝
+// ░╚═══██╗██║░░░░░██║██║╚██╔╝██║██╔══╝░░░╚═══██╗██╔══██║██║░░██║██╔═══╝░
+// ██████╔╝███████╗██║██║░╚═╝░██║███████╗██████╔╝██║░░██║╚█████╔╝██║░░░░░
+// ╚═════╝░╚══════╝╚═╝╚═╝░░░░░╚═╝╚══════╝╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░░░░
 contract SlimeShop is
     BoundLayerableFirstComposedCutoff,
     ERC2981,
@@ -18,7 +24,7 @@ contract SlimeShop is
         uint64 maxMintedSetsPerWallet;
     }
 
-    PublicMintParameters publicMintParameters;
+    PublicMintParameters public publicMintParameters;
     bytes32 public merkleRoot;
 
     error IncorrectPayment(uint256 got, uint256 want);
@@ -49,9 +55,6 @@ contract SlimeShop is
         });
 
         merkleRoot = args.merkleRoot;
-        // publicSaleStartTime = args.startTime;
-        // publicMintPrice = args.publicMintPrice;
-        // MAX_SETS_PER_WALLET = args.maxSetsPerWallet;
         _setDefaultRoyalty(
             args.royaltyInfo.receiver,
             args.royaltyInfo.royaltyFraction
