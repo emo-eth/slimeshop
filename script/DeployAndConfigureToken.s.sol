@@ -60,7 +60,7 @@ contract DeployAndConfigureToken is Script {
         address royaltyRecipient = vm.envAddress("ROYALTY_RECIPIENT");
         uint96 royaltyFeeBps = uint96(vm.envUint("ROYALTY_FEE_BPS"));
 
-        constructorArgs.name = "SlimeShop";
+        constructorArgs.name = "SLIMESHOP";
         constructorArgs.symbol = "SS";
         constructorArgs.vrfCoordinatorAddress = vrfCoordinatorAddress;
         constructorArgs.maxNumSets = 5555;

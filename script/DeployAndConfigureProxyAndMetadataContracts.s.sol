@@ -65,7 +65,7 @@ contract DeployAndConfigureMetadataProxy is Script {
                 1000,
                 1250,
                 "https://slimeshop.slimesunday.com",
-                "hello world"
+                'SLIMESHOP is a \\"create your own collage\\" project developed by Slimesunday and OpenSea that allows you to create your own Slimesunday inspired dream collage on the blockchain.'
             )
         );
         vm.stopBroadcast();

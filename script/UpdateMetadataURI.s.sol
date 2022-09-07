@@ -44,14 +44,16 @@ contract UpdateMetadataBaseURI is Script {
         address deployer = vm.envAddress("DEPLOYER");
         address metadataContract = vm.envAddress("METADATA_PROXY");
         string memory baseLayerURI = vm.envString("BASE_LAYER_URI");
-
-        // use a separate admin account to deploy the proxy
+        string memory defaultURI = vm.envString("DEFAULT_URI");
+        string
+            memory description = 'SLIMESHOP is a \\"create your own collage\\" project developed by Slimesunday and OpenSea that allows you to create your own Slimesunday inspired dream collage on the blockchain.';
         vm.startBroadcast(deployer);
-        // deploy this to have a copy of implementation logic
         SlimeShopImageLayerable metadata = SlimeShopImageLayerable(
             metadataContract
-        ); //, deployer);
+        );
 
-        metadata.setBaseLayerURI(baseLayerURI);
+        // metadata.setBaseLayerURI(baseLayerURI);
+        // metadata.setDefaultURI(defaultURI);
+        metadata.setDescription(description);
     }
 }

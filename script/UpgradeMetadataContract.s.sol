@@ -54,6 +54,5 @@ contract Deploy is Script {
 
         // set new storage vars if necessary
         // vm.startBroadcast(deployer);
-        // SlimeShopImageLayerable impl = SlimeShopImageLayerable(proxyAddress);
     }
 }

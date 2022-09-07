@@ -44,7 +44,7 @@ contract SlimeShopTest is Test {
         Merkle m = new Merkle();
         proof = m.getProof(leaves, 100);
 
-        constructorArgs.name = "SlimeShop";
+        constructorArgs.name = "SLIMESHOP";
         constructorArgs.symbol = "SS";
         constructorArgs.vrfCoordinatorAddress = address(1);
         constructorArgs.maxNumSets = 5555;
