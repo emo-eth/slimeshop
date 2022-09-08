@@ -122,10 +122,15 @@ contract SlimeShopTest is Test {
         test.mint{value: 1 ether}(5);
     }
 
-    function testMint_maxSets() public {
+    function testMint_overMaxSets() public {
         test.setMaxMintedSetsPerWallet(type(uint64).max);
         vm.expectRevert(MaxSupply.selector);
         test.mint{value: 0.2 ether * 5556}(5556);
+    }
+
+    function testMint_maxSets() public {
+        test.setMaxMintedSetsPerWallet(type(uint64).max);
+        test.mint{value: 0.2 ether * 5555}(5555);
     }
 
     function testMintAllowList() public {

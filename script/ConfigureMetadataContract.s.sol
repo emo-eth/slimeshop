@@ -10,17 +10,17 @@ import {DisplayType} from "bound-layerable/interface/Enums.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {Solenv} from "solenv/Solenv.sol";
 import {SlimeShopImageLayerable} from "../src/SlimeShopImageLayerable.sol";
+import {ScriptBase} from "./ScriptBase.s.sol";
 
-contract ConfigureMetadataContract is Script {
+contract ConfigureMetadataContract is ScriptBase {
     using Strings for uint256;
 
     uint256[] traitIds;
     Attribute[] attributes;
-    address tokenAddress;
+    // address tokenAddress;
     string baseLayerURI;
     string defaultURI;
 
-    address deployer;
     struct AttributeTuple {
         uint256 traitId;
         string name;
@@ -47,13 +47,10 @@ contract ConfigureMetadataContract is Script {
         }
     }
 
-    function setUp() public virtual {
-        Solenv.config();
+    function setUp() public virtual override {
+        super.setUp();
         configureAttributes();
 
-        deployer = vm.envAddress("DEPLOYER");
-        tokenAddress = vm.envAddress("TOKEN");
-        // string memory defaultURI = vm.envString("DEFAULT_URI");
         baseLayerURI = vm.envString("BASE_LAYER_URI");
         defaultURI = vm.envString("DEFAULT_URI");
     }
@@ -241,7 +238,6 @@ contract ConfigureMetadataContract is Script {
     function run() public {
         setUp();
 
-        TestnetToken token = TestnetToken(tokenAddress);
         // run(address(token.metadataContract()));
         run(address(new SlimeShopImageLayerable(deployer, "", 0, 0, "", "")));
     }

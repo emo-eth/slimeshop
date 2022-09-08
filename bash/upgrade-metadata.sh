@@ -1,1 +1,1 @@
-forge script script/UpgradeMetadataContract.s.sol -vvv --fork-url $ETH_RPC_URL --private-keys $SECRET --private-keys $SECRET2 -vvvv --ffi $1
+forge script script/UpgradeMetadataContract.s.sol -vvv --fork-url $ETH_RPC_URL -vvvv --ffi $1

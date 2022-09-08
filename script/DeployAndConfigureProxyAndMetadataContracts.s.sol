@@ -9,15 +9,16 @@ import {TransparentUpgradeableProxy} from "openzeppelin-contracts/contracts/prox
 import {Solenv} from "solenv/Solenv.sol";
 import {ConfigureMetadataContract} from "./ConfigureMetadataContract.s.sol";
 import {SlimeShopImageLayerable} from "../src/SlimeShopImageLayerable.sol";
+import {ScriptBase} from "./ScriptBase.s.sol";
 
-contract DeployAndConfigureMetadataProxy is Script {
+contract DeployAndConfigureMetadataContracts is ScriptBase {
     struct AttributeTuple {
         uint256 traitId;
         string name;
     }
 
-    function setUp() public virtual {
-        Solenv.config();
+    function setUp() public virtual override {
+        super.setUp();
     }
 
     function getLayerTypeStr(uint256 layerId)
@@ -40,8 +41,8 @@ contract DeployAndConfigureMetadataProxy is Script {
     }
 
     function run() public {
-        address deployer = vm.envAddress("DEPLOYER");
-        address admin = vm.envAddress("ADMIN");
+        // address deployer = vm.envAddress("DEPLOYER");
+        // address admin = vm.envAddress("ADMIN");
 
         // use a separate admin account to deploy the proxy
         vm.startBroadcast(admin);

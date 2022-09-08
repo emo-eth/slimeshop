@@ -54,6 +54,6 @@ contract UpdateMetadataBaseURI is Script {
 
         // metadata.setBaseLayerURI(baseLayerURI);
         // metadata.setDefaultURI(defaultURI);
-        metadata.setDescription(description);
+        // metadata.setDescription(description);
     }
 }

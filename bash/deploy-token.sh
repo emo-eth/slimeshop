@@ -1,0 +1,1 @@
+forge script script/DeployAndConfigureToken.s.sol --ffi --rpc-url $ETH_RPC_URL --verify --etherscan-api-key $ETHERSCAN_API_KEY $1

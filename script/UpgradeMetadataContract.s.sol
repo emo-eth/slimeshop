@@ -9,9 +9,9 @@ import {DisplayType} from "bound-layerable/interface/Enums.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {TransparentUpgradeableProxy} from "openzeppelin-contracts/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {Solenv} from "solenv/Solenv.sol";
-import {TestnetToken} from "bound-layerable/implementations/TestnetToken.sol";
+import {ScriptBase} from "./ScriptBase.s.sol";
 
-contract Deploy is Script {
+contract UpgradeMetadataContract is ScriptBase {
     using Strings for uint256;
 
     struct AttributeTuple {
@@ -19,19 +19,10 @@ contract Deploy is Script {
         string name;
     }
 
-    function setUp() public virtual {
-        Solenv.config();
-    }
-
     function run() public {
-        address deployer = vm.envAddress("DEPLOYER");
-        address admin = vm.envAddress("ADMIN");
-        address proxyAddress = vm.envAddress("METADATA_PROXY");
-        // address tokenAddress = vm.envAddress("TOKEN");
+        setUp();
 
-        // address proxyAddress = address(
-        //     TestnetToken(tokenAddress).metadataContract()
-        // );
+        address proxyAddress = vm.envAddress("METADATA_PROXY");
 
         vm.startBroadcast(admin);
 

@@ -6,17 +6,17 @@ import {Solenv} from "solenv/Solenv.sol";
 import {SlimeShop} from "../src/SlimeShop.sol";
 import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
 import {Merkle} from "murky/Merkle.sol";
+import {ScriptBase} from "./ScriptBase.s.sol";
 
+//104820+121987+8191965+904578+2716771+3660579+293558+77894
 interface ConsumerAdder {
     function addConsumer(uint64 id, address consumer) external;
 }
 
-contract DeployAndConfigureToken is Script {
+contract DeployAndConfigureToken is ScriptBase {
     uint8[] layerTypes;
     uint256[2][] typeDistributions;
-    uint64 subscriptionId;
     ConstructorArgs constructorArgs;
-
     ConsumerAdder subscription;
 
     struct AllowListLeaf {
@@ -26,8 +26,9 @@ contract DeployAndConfigureToken is Script {
         uint256 startTime;
     }
 
-    function setUp() public virtual {
-        Solenv.config();
+    function setUp() public virtual override {
+        super.setUp();
+
         configureDistributions();
 
         address vrfCoordinatorAddress;
@@ -46,79 +47,34 @@ contract DeployAndConfigureToken is Script {
                 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc
             );
         }
-        subscriptionId = uint64(vm.envUint("SUBSCRIPTION_ID"));
-        address metadataContractAddress = vm.envAddress("METADATA_PROXY");
-        uint256 firstComposedCutoff = vm.envUint(
-            "FIRST_COMPOSED_CUTOFF_TIMESTAMP"
-        );
-        if (block.chainid == 1) {
-            // 2022-09-15 14:00:00 EDT
-            firstComposedCutoff = 1663275600;
-        }
-        bytes32 merkleRoot = vm.envBytes32("MERKLE_ROOT");
-        uint64 startTime = uint64(vm.envUint("START_TIME"));
-        startTime = startTime == 0 ? type(uint64).max : startTime;
-        address commissionFeeRecipient = vm.envAddress("FEE_RECIPIENT");
-        address royaltyRecipient = vm.envAddress("ROYALTY_RECIPIENT");
-        uint96 royaltyFeeBps = uint96(vm.envUint("ROYALTY_FEE_BPS"));
 
         constructorArgs.name = "SLIMESHOP";
         constructorArgs.symbol = "SS";
         constructorArgs.vrfCoordinatorAddress = vrfCoordinatorAddress;
         constructorArgs.maxNumSets = 5555;
         constructorArgs.numTokensPerSet = 7;
-        constructorArgs.subscriptionId = subscriptionId;
-        constructorArgs.metadataContractAddress = metadataContractAddress;
-        constructorArgs.firstComposedCutoff = firstComposedCutoff;
+        constructorArgs.subscriptionId = uint64(vm.envUint("SUBSCRIPTION_ID"));
+        constructorArgs.metadataContractAddress = vm.envAddress(
+            "METADATA_PROXY"
+        );
+        constructorArgs.firstComposedCutoff = vm.envUint(
+            "FIRST_COMPOSED_CUTOFF_TIMESTAMP"
+        );
         constructorArgs.exclusiveLayerId = 255;
-        constructorArgs.merkleRoot = merkleRoot;
-        constructorArgs.startTime = startTime;
-        constructorArgs.feeRecipient = commissionFeeRecipient;
+        constructorArgs.merkleRoot = vm.envBytes32("MERKLE_ROOT");
+        constructorArgs.startTime = uint64(vm.envUint("START_TIME"));
+        if (block.chainid != 1) {
+            constructorArgs.startTime = 0;
+        }
+        constructorArgs.feeRecipient = vm.envAddress("FEE_RECIPIENT");
         constructorArgs.feeBps = 250;
         constructorArgs.royaltyInfo = RoyaltyInfo(
-            royaltyRecipient,
-            royaltyFeeBps
+            vm.envAddress("ROYALTY_RECIPIENT"),
+            uint96(vm.envUint("ROYALTY_FEE_BPS"))
         );
         constructorArgs.publicMintPrice = .15 ether;
         constructorArgs.maxSetsPerWallet = 5;
         constructorArgs.keyHash = keyHash;
-    }
-
-    function getMerkleRoot() internal returns (bytes32) {
-        AllowListLeaf[3] memory leaves = [
-            AllowListLeaf(
-                0x92B381515bd4851Faf3d33A161f7967FD87B1227,
-                0.01 ether,
-                5,
-                0
-            ),
-            AllowListLeaf(
-                0x333601a803CAc32B7D17A38d32c9728A93b422f4,
-                0.02 ether,
-                6,
-                0
-            ),
-            AllowListLeaf(
-                0x700fe545742485732575A7245f558978aDcc1Ec4,
-                0.03 ether,
-                7,
-                0
-            )
-        ];
-        bytes32[] memory leafHashes = new bytes32[](leaves.length);
-        for (uint256 i = 0; i < leaves.length; i++) {
-            leafHashes[i] = keccak256(
-                abi.encode(
-                    leaves[i].addr,
-                    leaves[i].mintPrice,
-                    leaves[i].maxSetsForWallet,
-                    leaves[i].startTime
-                )
-            );
-        }
-
-        Merkle m = new Merkle();
-        return m.getRoot(leafHashes);
     }
 
     function configureDistributions() internal {
@@ -174,13 +130,15 @@ contract DeployAndConfigureToken is Script {
 
     function run() public {
         setUp();
-        address deployer = vm.envAddress("DEPLOYER");
+        // address deployer = vm.envAddress("DEPLOYER");
 
         vm.startBroadcast(deployer);
         SlimeShop slimeShop = new SlimeShop(constructorArgs);
-        subscription.addConsumer(subscriptionId, address(slimeShop));
+        vm.makePersistent(address(slimeShop));
         slimeShop.setLayerTypeDistributions(layerTypes, typeDistributions);
-        slimeShop.mint{value: 0.15 ether}(1);
-        slimeShop.withdraw();
+        // subscription.addConsumer(
+        //     constructorArgs.subscriptionId,
+        //     address(slimeShop)
+        // );
     }
 }

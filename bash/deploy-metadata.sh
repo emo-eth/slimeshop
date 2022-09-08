@@ -1,0 +1,1 @@
+forge script DeployAndConfigureMetadataContracts --rpc-url $ETH_RPC_URL --ffi --verify --etherscan-api-key $ETHERSCAN_API_KEY $1

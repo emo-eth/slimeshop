@@ -7,18 +7,14 @@ import {SlimeShop} from "../src/SlimeShop.sol";
 import {ConstructorArgs, RoyaltyInfo} from "../src/Structs.sol";
 import {Merkle} from "murky/Merkle.sol";
 import {PackedByteUtility} from "bound-layerable/lib/PackedByteUtility.sol";
+import {ScriptBase} from "./ScriptBase.s.sol";
 
-contract ForceUnsafeReveal is Script {
+contract ForceUnsafeReveal is ScriptBase {
     uint8[] layerTypes;
     uint256[2][] typeDistributions;
 
-    function setUp() public virtual {
-        Solenv.config();
-    }
-
     function run() public {
         setUp();
-        address deployer = vm.envAddress("DEPLOYER");
         address token = vm.envAddress("TOKEN");
         SlimeShop slimeShop = SlimeShop(token);
         vm.startBroadcast(deployer);
