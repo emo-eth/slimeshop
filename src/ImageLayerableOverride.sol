@@ -136,4 +136,16 @@ contract SlimeShopBatchOverride is SlimeShopImageLayerable {
         layerSeed
       );
   }
+
+  function getLayerId(uint256 tokenId) public view returns (uint256) {
+    return tokenId % 7;
+  }
+
+  function getActiveLayers(uint256 tokenId)
+    public
+    view
+    returns (uint256[] memory)
+  {
+    return new uint256[](0);
+  }
 }

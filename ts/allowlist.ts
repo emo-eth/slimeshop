@@ -10,6 +10,7 @@ const PUBLIC_MINT_PRICE = BigNumber.from("150000000000000000");
 // const RINKEBY_START_TIME = BigNumber.from(1662632144);
 const MAINNET_START_TIME = BigNumber.from(1662660000);
 
+console.log(lite.length);
 const liteLeaves: string[] = lite;
 let leaves: ILeaf[] = [];
 for (let leaf of liteLeaves) {
@@ -67,7 +68,6 @@ function getProof(leaf: ILeaf) {
 
 function getNumberMintedForAddress(address: string): BigNumber {
   return BigNumber.from(0);
-  // return contractInstance.call.getNumberMintedForAddress(address)
 }
 function findBestLeafForAddress(address: string): ILeaf | null {
   const minterNumMinted = getNumberMintedForAddress(address);
@@ -107,7 +107,7 @@ function findBestLeafForAddress(address: string): ILeaf | null {
 console.log(merkletree.getHexRoot());
 
 const allowListLeaf = findBestLeafForAddress(
-  "0x875961f2eff575b9c9e05f25b2bc339341e489ea".toLowerCase()
+  "0xb3b391997f16662b7e16871368cdd105fcccb98e".toLowerCase()
 );
 let proof;
 if (allowListLeaf != null) {
